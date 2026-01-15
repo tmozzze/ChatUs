@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
+
+	"github.com/tmozzze/ChatUs/internal/config"
+	"github.com/tmozzze/ChatUs/internal/storage"
 )
 
 const (
@@ -13,6 +17,7 @@ const (
 
 func main() {
 	// Init Config
+	cfg := config.MustLoad()
 
 	// Init Logger
 	log := setupLogger(envDev)
@@ -20,6 +25,12 @@ func main() {
 	log.Debug("debug messages are enabled")
 
 	// Init Storage
+	_, err := storage.InitDB(cfg.Postgres)
+	if err != nil {
+		fmt.Fprintf(os.Stdout, "failed to init storage: %v\n", err)
+		os.Exit(1)
+	}
+	log.Info("storage is initialized")
 
 	// Init Repository
 
